@@ -34,8 +34,7 @@ export const unlockCardData = {
 export default function UnlockCard({
   title = unlockCardData.title,
   date = unlockCardData.date,
-  items = unlockCardData.items,
-  onAddClick
+  items = unlockCardData.items
 }) {
 
   // Dynamically calculate the total earned by parsing the reward strings
@@ -50,20 +49,9 @@ export default function UnlockCard({
       
       {/* Top Section */}
       <div className="flex flex-col pb-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-[17px] font-bold text-gray-900 dark:text-gray-100 leading-snug tracking-tight">
-            {title}
-          </h2>
-          {onAddClick && (
-            <button 
-              onClick={onAddClick}
-              className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-110 active:scale-95 transition-all outline-none"
-              title="Add New Reward"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-            </button>
-          )}
-        </div>
+        <h2 className="text-[17px] font-bold text-gray-900 dark:text-gray-100 leading-snug tracking-tight">
+          {title}
+        </h2>
         <div className="text-[14px] text-gray-500 dark:text-gray-400 mt-1 font-medium flex items-center space-x-1.5">
           <span>{totalEarned}</span>
           <span className="text-[12px] opacity-70">&bull;</span>

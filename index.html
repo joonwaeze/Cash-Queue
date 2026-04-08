@@ -158,79 +158,9 @@
     }
 
     function LandingPage() {
-      const [items, setItems] = useState(unlockCardData.items);
-      const [showModal, setShowModal] = useState(false);
-      const [formData, setFormData] = useState({ appName: '', earnedReward: '', earnedDate: '' });
-
-      const handleSave = () => {
-        if (!formData.appName || !formData.earnedReward) return;
-        const newEntry = {
-          ...formData,
-          // Format logic or fallbacks
-          appIconUrl: formData.appName ? `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.appName)}&background=random&color=fff&rounded=true&bold=true` : './Assest/image 54.png',
-          earnedReward: formData.earnedReward.startsWith('$') ? formData.earnedReward : `$${formData.earnedReward}`
-        };
-        setItems([...items, newEntry]);
-        setShowModal(false);
-        setFormData({ appName: '', earnedReward: '', earnedDate: '' });
-      };
-
       return (
         <div className="min-h-screen flex items-center justify-center p-6 relative">
-          <UnlockCard items={items} onAddClick={() => setShowModal(true)} />
-          
-          {/* Add Item Modal */}
-          {showModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-[90%] max-w-[340px] transform transition-all scale-100 opacity-100">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 font-['Figtree']">Add New Reward</h3>
-                
-                <div className="space-y-4 font-['Figtree']">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">App Name</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Candy Crush" 
-                      value={formData.appName}
-                      onChange={(e) => setFormData({...formData, appName: e.target.value})}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm"
-                    />
-                  </div>
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Reward</label>
-                      <input 
-                        type="text" 
-                        placeholder="$1.00" 
-                        value={formData.earnedReward}
-                        onChange={(e) => setFormData({...formData, earnedReward: e.target.value})}
-                        className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Date</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. Mar 15" 
-                        value={formData.earnedDate}
-                        onChange={(e) => setFormData({...formData, earnedDate: e.target.value})}
-                        className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 mt-8 font-['Figtree']">
-                  <button onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-xl font-bold text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                    Cancel
-                  </button>
-                  <button onClick={handleSave} className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white bg-gray-900 dark:bg-blue-600 hover:bg-gray-800 dark:hover:bg-blue-700 transition-colors shadow-lg shadow-gray-900/20 dark:shadow-blue-600/20">
-                    Add Item
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <UnlockCard />
         </div>
       );
     }
