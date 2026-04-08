@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlock Card Landing Page</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Config for Dark Mode and Fonts -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Figtree', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React & ReactDOM CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel Standalone for in-browser JSX parsing -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Figtree', sans-serif;
+    }
+
+    /* Optional sleek scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 ease-in-out antialiased">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // Direct copy of the UnlockCard component from our JSX file
+    // Edit this data object to easily add/change items without touching the component below
+    const unlockCardData = {
+      title: "Unlocks in 13 days",
+      date: "Feb 28",
+      items: [
+        {
+          appName: "Coin Chef",
+          earnedDate: "Dec 30",
+          appIconUrl: "./Assest/image 54.png",
+          earnedReward: "$0.50"
+        },
+        {
+          appName: "Animals & Coins",
+          earnedDate: "Jan 22",
+          appIconUrl: "./Assest/image 53.png",
+          earnedReward: "$2.50"
+        },
+        {
+          appName: "Monopoly Go!",
+          earnedDate: "Jan 22",
+          appIconUrl: "./Assest/image 55.png",
+          earnedReward: "$5.00"
+        }
+      ]
+    };
+
+    function UnlockCard({
+      title = unlockCardData.title,
+      date = unlockCardData.date,
+      items = unlockCardData.items
+    }) {
+      
+      // Dynamically calculate the total earned by parsing the reward strings
+      const calculatedTotal = items.reduce((acc, item) => {
+        const val = parseFloat((item.earnedReward || "").replace(/[^0-9.-]+/g,""));
+        return acc + (isNaN(val) ? 0 : val);
+      }, 0);
+      const totalEarned = `$${calculatedTotal.toFixed(2)}`;
+
+      return (
+        <div className="group w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-none dark:border dark:border-gray-800 p-5 transition-all duration-300 cursor-pointer hover:-translate-y-1">
+
+          {/* Top Section */}
+          <div className="flex flex-col pb-4 relative overflow-hidden">
+            <h2 className="text-[17px] font-bold text-gray-900 dark:text-gray-100 leading-snug tracking-tight">
+              {title}
+            </h2>
+            <div className="text-[14px] text-gray-500 dark:text-gray-400 mt-1 font-medium flex items-center space-x-1.5">
+              <span>{totalEarned}</span>
+              <span className="text-[12px] opacity-70">&bull;</span>
+              <span>{date}</span>
+            </div>
+          </div>
+
+          {/* Bottom Section (List of Apps) */}
+          <div className="flex flex-col gap-1">
+            {items.map((item, index) => (
+              <div key={index} className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#F4F4F4] dark:hover:bg-gray-700/30 rounded-[14px] transition-colors duration-300 ease-in-out cursor-pointer">
+
+                {/* Left Side: App Info */}
+                <div className="flex items-center space-x-3.5">
+                  <div className="relative overflow-hidden rounded-[14px] bg-gray-100 dark:bg-gray-800 shadow-sm border border-gray-100/50 dark:border-gray-700/50 group-hover:scale-[1.05] group-active:scale-95 transition-transform duration-300 ease-out">
+                    <img
+                      src={item.appIconUrl}
+                      alt={`${item.appName} icon`}
+                      className="w-[42px] h-[42px] object-cover flex-shrink-0"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[15px] font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                      {item.appName}
+                    </span>
+                    <span className="text-[13px] text-gray-400 dark:text-gray-500 mt-0.5 font-medium">
+                      Earned {item.earnedDate}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right Side: Value */}
+                <div className="text-[15px] font-bold text-gray-900 dark:text-gray-100">
+                  {item.earnedReward}
+                </div>
+
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function LandingPage() {
+      const [items, setItems] = useState(unlockCardData.items);
+      const [showModal, setShowModal] = useState(false);
+      const [formData, setFormData] = useState({ appName: '', earnedReward: '', earnedDate: '' });
+
+      const handleSave = () => {
+        if (!formData.appName || !formData.earnedReward) return;
+        const newEntry = {
+          ...formData,
+          // Format logic or fallbacks
+          appIconUrl: formData.appName ? `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.appName)}&background=random&color=fff&rounded=true&bold=true` : './Assest/image 54.png',
+          earnedReward: formData.earnedReward.startsWith('$') ? formData.earnedReward : `$${formData.earnedReward}`
+        };
+        setItems([...items, newEntry]);
+        setShowModal(false);
+        setFormData({ appName: '', earnedReward: '', earnedDate: '' });
+      };
+
+      return (
+        <div className="min-h-screen flex items-center justify-center p-6 relative">
+          <UnlockCard items={items} onAddClick={() => setShowModal(true)} />
+          
+          {/* Add Item Modal */}
+          {showModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-[90%] max-w-[340px] transform transition-all scale-100 opacity-100">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 font-['Figtree']">Add New Reward</h3>
+                
+                <div className="space-y-4 font-['Figtree']">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">App Name</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Candy Crush" 
+                      value={formData.appName}
+                      onChange={(e) => setFormData({...formData, appName: e.target.value})}
+                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Reward</label>
+                      <input 
+                        type="text" 
+                        placeholder="$1.00" 
+                        value={formData.earnedReward}
+                        onChange={(e) => setFormData({...formData, earnedReward: e.target.value})}
+                        className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Date</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Mar 15" 
+                        value={formData.earnedDate}
+                        onChange={(e) => setFormData({...formData, earnedDate: e.target.value})}
+                        className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-8 font-['Figtree']">
+                  <button onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-xl font-bold text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    Cancel
+                  </button>
+                  <button onClick={handleSave} className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white bg-gray-900 dark:bg-blue-600 hover:bg-gray-800 dark:hover:bg-blue-700 transition-colors shadow-lg shadow-gray-900/20 dark:shadow-blue-600/20">
+                    Add Item
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<LandingPage />);
+  </script>
+</body>
+
+</html>
