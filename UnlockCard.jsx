@@ -14,7 +14,7 @@ import React from 'react';
 // Edit this data object to easily add/change items without touching the component above
 export const unlockCardData = {
   title: "Unlocks in 13 days",
-  date: "Feb 28",
+  date: "Apr 20",
   items: [
     {
       appName: "Coin Chef",
@@ -48,9 +48,11 @@ export default function UnlockCard({
     <div className="group w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-none dark:border dark:border-gray-800 p-5 font-['Figtree',_sans-serif] transition-all duration-300">
 
       {/* Top Section */}
-      <div className="flex flex-col pb-4">
+      <div className="flex flex-col pb-5">
         <h2 className="text-[18px] font-semibold text-[#1F1F1F] dark:text-[#1F1F1F] leading-snug tracking-tight">
-          {title}
+          {typeof title === 'string' ? title.split(/(\d+ days)/i).map((part, i) =>
+            /^\d+ days$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
+          ) : title}
         </h2>
         <div className="text-[16px] font-semibold text-[#666666] dark:text-[#666666] mt-1 flex items-center space-x-1.5">
           <span>{totalEarned}</span>

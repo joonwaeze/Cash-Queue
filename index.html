@@ -70,7 +70,7 @@
     // Edit this data object to easily add/change items without touching the component below
     const unlockCardData = {
       title: "Unlocks in 13 days",
-      date: "Feb 28",
+      date: "Apr 20",
       items: [
         {
           appName: "Coin Chef",
@@ -110,9 +110,11 @@
         <div className="group w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-none dark:border dark:border-gray-800 p-5 transition-all duration-300 cursor-pointer hover:-translate-y-1">
 
           {/* Top Section */}
-          <div className="flex flex-col pb-4 relative overflow-hidden">
+          <div className="flex flex-col pb-6 relative overflow-hidden">
             <h2 className="text-[18px] font-bold text-[#333333] dark:text-[#333333] leading-snug tracking-tight">
-              {title}
+              {typeof title === 'string' ? title.split(/(\d+ days)/i).map((part, i) => 
+                /^\d+ days$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
+              ) : title}
             </h2>
             <div className="text-[16px] font-bold text-[#666666] mt-1 flex items-center space-x-1.5">
               <span>{totalEarned}</span>
