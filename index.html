@@ -120,7 +120,7 @@
     /* ===================== */
 
     /* Progress data - current and target points */
-    const progressData = { current: 100, target: 200 };
+    const progressData = { current: 100, target: 500 };
 
     /* Card metadata */
     const cardMeta = {
@@ -300,13 +300,83 @@
       const [localItems, setLocalItems] = useState([...items]);
       const [draggedIndex, setDraggedIndex] = useState(null);
       const [dragOverIndex, setDragOverIndex] = useState(null);
+      /* Track completed items */
+      const [completedItems, setCompletedItems] = useState(new Set());
+      /* Track progress with accumulated rewards */
+      const [localProgress, setLocalProgress] = useState({ ...progress });
+      /* Track items currently swiping (animation) */
+      const [swipingItems, setSwipingItems] = useState(new Set());
+      /* Track items sliding in to bottom */
+      const [slidingInItems, setSlidingInItems] = useState(new Set());
+      /* Track sorted item order */
+      const [sortedItemIds, setSortedItemIds] = useState(() => items.map(item => item.id));
+
+      // Sort items by sortedItemIds order
+      const getSortedItems = () => {
+        return [...localItems].sort((a, b) => {
+          const aIndex = sortedItemIds.indexOf(a.id);
+          const bIndex = sortedItemIds.indexOf(b.id);
+          return aIndex - bIndex;
+        });
+      };
 
       // Calculate progress percentage for the progress bar
-      const progressPercent = (progress.current / progress.target) * 100;
+      const progressPercent = (localProgress.current / localProgress.target) * 100;
 
-      /* Determine which items to display based on expanded state */
-      const displayedItems = isExpanded ? localItems : localItems.slice(0, maxVisibleItems);
+      /* Determine which items to display based on expanded state and sorted order */
+      const sortedItems = getSortedItems();
+      const displayedItems = isExpanded ? sortedItems : sortedItems.slice(0, maxVisibleItems);
       const hasMoreItems = localItems.length > maxVisibleItems;
+
+      /* Handle item click to mark as completed */
+      const handleItemClick = (item) => {
+        if (completedItems.has(item.id) || swipingItems.has(item.id) || slidingInItems.has(item.id)) return;
+
+        // Extract reward value
+        const rewardValue = parseInt(item.reward.replace(/[^0-9]/g, ''), 10);
+
+        // Mark item as completed immediately (show checkmark + "Done!")
+        setCompletedItems(prev => new Set([...prev, item.id]));
+
+        // Update progress
+        setLocalProgress(prev => ({
+          ...prev,
+          current: Math.min(prev.current + rewardValue, prev.target)
+        }));
+
+        // Start swiping animation after a short delay (so user sees completed state)
+        setTimeout(() => {
+          setSwipingItems(prev => new Set([...prev, item.id]));
+        }, 900);
+
+        // After swipe animation (350ms), slide in to bottom seamlessly
+        setTimeout(() => {
+          // Remove swiping state
+          setSwipingItems(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(item.id);
+            return newSet;
+          });
+
+          // Start sliding in from left
+          setSlidingInItems(prev => new Set([...prev, item.id]));
+
+          // Move completed item to bottom
+          setSortedItemIds(prev => {
+            const newIds = prev.filter(id => id !== item.id);
+            return [...newIds, item.id];
+          });
+        }, 1250);
+
+        // Clear sliding in state after slide in animation
+        setTimeout(() => {
+          setSlidingInItems(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(item.id);
+            return newSet;
+          });
+        }, 1600);
+      };
 
       /* Handle drag start */
       const handleDragStart = (e, index) => {
@@ -380,6 +450,58 @@
         .animate-fade-in {
           animation: fadeSlideIn 300ms ease-in-out forwards;
         }
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.5);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-scale-in {
+          animation: scaleIn 300ms ease-in-out forwards;
+        }
+        @keyframes swipeRightToLeft {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-120%);
+            opacity: 0.5;
+          }
+        }
+        @keyframes slideUp {
+          from {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideInFromLeft {
+          from {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .animate-swipe-out {
+          animation: swipeRightToLeft 350ms ease-in forwards;
+        }
+        .animate-slide-in {
+          animation: slideInFromLeft 350ms ease-out forwards;
+        }
+        .animate-slide-up {
+          animation: slideUp 350ms ease-out forwards;
+        }
       `;
 
       /* ===================== */
@@ -392,15 +514,26 @@
         </svg>
       );
 
+      /* ===================== */
+      /* CHECK ICON            */
+      /* Purpose: Checkmark for completed state */
+      /* ===================== */
+      const CheckIcon = () => (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" fill="#1F1F1F" />
+          <path d="M15.5 9L11 14.5L9 12.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+
       return (
         <>
           <style>{style}</style>
-          <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5">
+          <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5 overflow-hidden">
             <div className="flex flex-col">
               {/* Progress section: current/target points with badge */}
               <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-[32px] font-bold text-[#FF5C01] leading-none">{progress.current}</span>
-                <span className="text-[18px] font-bold text-[#333333] dark:text-[#999999]">/{progress.target}</span>
+                <span className="text-[32px] font-bold text-[#FF5C01] leading-none">{localProgress.current}</span>
+                <span className="text-[18px] font-bold text-[#333333] dark:text-[#999999]">/{localProgress.target}</span>
                 <div className="">
                   <span className="text-[20px] font-semibold text-[#333333]">pts</span>
                 </div>
@@ -423,25 +556,28 @@
               {/* List of reward tasks - limited to maxVisibleItems unless expanded */}
               <div className="flex flex-col gap-2">
                 {displayedItems.map((item, index) => {
-                  const originalIndex = localItems.indexOf(item);
-                  const isDragging = draggedIndex === originalIndex;
-                  const isDragOver = dragOverIndex === originalIndex && draggedIndex !== originalIndex;
+                  const sortedIndex = sortedItems.indexOf(item);
+                  const isDragging = draggedIndex === sortedIndex;
+                  const isDragOver = dragOverIndex === sortedIndex && draggedIndex !== sortedIndex;
                   const isNewlyVisible = isExpanded && index >= maxVisibleItems;
+                  const isCompleted = completedItems.has(item.id);
+                  const isSwiping = swipingItems.has(item.id);
+                  const isSlidingIn = slidingInItems.has(item.id);
 
                   return (
                     <div
                       key={item.id}
                       data-drag-item
-                      data-drag-index={originalIndex}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, originalIndex)}
-                      onDragOver={(e) => handleDragOver(e, originalIndex)}
+                      data-drag-index={sortedIndex}
+                      draggable={!isCompleted && !isSwiping && !isSlidingIn}
+                      onDragStart={(e) => handleDragStart(e, sortedIndex)}
+                      onDragOver={(e) => handleDragOver(e, sortedIndex)}
                       onDragEnd={handleDragEnd}
-                      onTouchStart={(e) => handleTouchStart(e, originalIndex)}
-                      onTouchMove={(e) => handleTouchMove(e, originalIndex)}
+                      onTouchStart={(e) => handleTouchStart(e, sortedIndex)}
+                      onTouchMove={(e) => handleTouchMove(e, sortedIndex)}
                       onTouchEnd={handleTouchEnd}
-                      className={`flex items-center justify-between p-2.5 -mx-2.5 rounded-[14px] transition-all duration-300 ease-in-out cursor-grab active:cursor-grabbing ${isDragging ? 'opacity-50 scale-95' : 'hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 hover:scale-[1.02]'
-                        } ${isNewlyVisible ? 'opacity-0 translate-y-2 animate-fade-in' : 'opacity-100 translate-y-0'}`}
+                      onClick={() => !isCompleted && !isSwiping && !isSlidingIn && handleItemClick(item)}
+                      className={`flex items-center justify-between p-2.5 -mx-2.5 rounded-[14px] transition-all duration-300 ease-in-out ${isCompleted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 hover:scale-[1.02] ${isDragging ? 'opacity-50 scale-95' : ''} ${isSwiping ? 'animate-swipe-out' : isSlidingIn ? 'animate-slide-in' : isNewlyVisible ? 'animate-fade-in' : ''}`}
                     >
                       {/* Icon and task description */}
                       <div className="flex items-center space-x-3.5 flex-1 min-w-0">
@@ -452,23 +588,29 @@
                           <img
                             src={item.iconUrl}
                             alt={item.primaryText}
-                            className="w-[42px] h-[42px] object-contain"
+                            className={`w-[42px] h-[42px] object-contain transition-all duration-300 ${isCompleted ? 'grayscale' : ''}`}
                           />
                         </div>
                         {/* Task primary and secondary text */}
                         <div className="flex flex-col min-w-0">
-                          <span className="text-[16px] font-semibold text-[#333333] dark:text-gray-100 leading-tight truncate">
+                          <span className={`text-[16px] font-semibold leading-tight truncate transition-all duration-300 ${isCompleted ? 'text-[#333333] line-through opacity-60' : 'text-[#333333] dark:text-gray-100'}`}>
                             {item.primaryText}
                           </span>
-                          <span className="text-[14px] font-semibold text-[#666666] dark:text-[#666666] mt-0.5 truncate">
-                            {item.secondaryText}
+                          <span className={`text-[14px] font-semibold mt-0.5 truncate transition-all duration-300 ${isCompleted ? 'text-[#333333] opacity-60' : 'text-[#666666] dark:text-[#666666]'}`}>
+                            {isCompleted ? 'Done!' : item.secondaryText}
                           </span>
                         </div>
                       </div>
 
-                      {/* Reward points amount */}
-                      <div className="text-[18px] font-bold text-[#1F1F1F] pl-2">
-                        {item.reward}
+                      {/* Reward points amount or checkmark */}
+                      <div className={`text-[18px] font-bold pl-2 transition-all duration-300 ${isCompleted ? 'w-[24px] h-[24px]' : 'text-[#1F1F1F]'}`}>
+                        {isCompleted ? (
+                          <div className="animate-scale-in">
+                            <CheckIcon />
+                          </div>
+                        ) : (
+                          item.reward
+                        )}
                       </div>
                     </div>
                   );
