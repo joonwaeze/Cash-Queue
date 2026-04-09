@@ -45,7 +45,7 @@ export default function UnlockCard({
   const totalEarned = `$${calculatedTotal.toFixed(2)}`;
 
   return (
-    <div className="group w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-none dark:border dark:border-gray-800 p-5 font-['Figtree',_sans-serif] transition-all duration-300">
+    <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5 font-['Figtree',_sans-serif]">
 
       {/* Top Section */}
       <div className="flex flex-col pb-5">
@@ -64,11 +64,11 @@ export default function UnlockCard({
       {/* Bottom Section (List of Apps) */}
       <div className="flex flex-col gap-1">
         {items.map((item, index) => (
-          <div key={index} className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#F4F4F4] dark:hover:bg-gray-700/30 rounded-[14px] transition-colors duration-300 ease-in-out cursor-pointer">
+          <div key={index} className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-[#FAFAFA] rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]">
 
             {/* Left Side: App Info */}
             <div className="flex items-center space-x-3.5">
-              <div className="relative overflow-hidden rounded-[14px] bg-gray-100 dark:bg-gray-800 shadow-sm border border-gray-100/50 dark:border-gray-700/50 group-hover:scale-[1.03] transition-transform duration-300 ease-out">
+              <div className="relative overflow-hidden rounded-[14px] bg-gray-100 dark:bg-gray-800 shadow-sm border border-gray-100/50 dark:border-gray-700/50">
                 <img
                   src={item.appIconUrl}
                   alt={`${item.appName} icon`}
