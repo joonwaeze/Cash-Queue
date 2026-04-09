@@ -6,15 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unlock Card Landing Page</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Tailwind Config for Dark Mode and Fonts -->
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -28,12 +24,9 @@
     }
   </script>
 
-  <!-- React & ReactDOM CDNs -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
-
-  <!-- Babel Standalone for in-browser JSX parsing -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
@@ -41,7 +34,6 @@
       font-family: 'Figtree', sans-serif;
     }
 
-    /* Optional sleek scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -67,8 +59,51 @@
   <script type="text/babel">
     const { useState } = React;
 
-    // Direct copy of the UnlockCard component from our JSX file
-    // Edit this data object to easily add/change items without touching the component below
+    function BoostBanner() {
+      const [isHovered, setIsHovered] = useState(false);
+      const motion = window.Motion ? window.Motion.motion : null;
+
+      if (!motion) {
+        return <div className="text-red-500 text-sm">Framer Motion not loaded.</div>;
+      }
+
+      return (
+        <motion.div
+          layout
+          className={`flex items-center justify-center bg-[#FCF4EC] dark:bg-[#3E2E1D] border select-none cursor-pointer outline-none focus:ring-2 focus:ring-[#FCB78B] transition-all duration-200 ${isHovered ? 'border-[#FCB78B]' : 'border-[#EBE4D9]'} dark:border-[#EBE4D9]`}
+          style={{
+            borderRadius: '18px',
+            padding: '8px 5px 8px 10px',
+          }}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+          transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          aria-label="Boost banner"
+        >
+          <motion.div layout="position" className="flex-shrink-0 flex items-center justify-center z-10 w-[52px] h-[52px]">
+            <img 
+              src="./Assest/Watch.svg" 
+              alt="Boost watch" 
+              className="w-[39px] h-[39px] object-contain flex-shrink-0 transition-all duration-200" 
+              style={{ filter: isHovered ? 'saturate(1.8)' : 'saturate(1)' }} 
+            />
+          </motion.div>
+
+          <motion.div
+            layout="position"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden text-left font-['Figtree',_sans-serif] flex ml-1"
+          >
+            <p className="text-[14px] font-semibold text-[#1F1F1F] dark:text-[#EAEAEA] leading-snug w-[184px] whitespace-normal pr-1">
+              5x Boost active! Rewards unlock up to 6 days sooner
+            </p>
+          </motion.div>
+        </motion.div>
+      );
+    }
+
     const unlockCardData = {
       title: "Unlocks in 13 days",
       date: "Apr 20",
@@ -99,8 +134,6 @@
       date = unlockCardData.date,
       items = unlockCardData.items
     }) {
-
-      // Dynamically calculate the total earned by parsing the reward strings
       const calculatedTotal = items.reduce((acc, item) => {
         const val = parseFloat((item.earnedReward || "").replace(/[^0-9.-]+/g, ""));
         return acc + (isNaN(val) ? 0 : val);
@@ -110,8 +143,7 @@
       return (
         <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5">
 
-          {/* Top Section */}
-          <div className="flex flex-col pb-6 relative overflow-hidden">
+          <div className="flex flex-col pb-5">
             <h2 className="text-[18px] font-bold text-[#333333] dark:text-[#333333] leading-snug tracking-tight">
               {typeof title === 'string' ? title.split(/(\d+ days)/i).map((part, i) =>
                 /^\d+ days$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
@@ -119,17 +151,17 @@
             </h2>
             <div className="text-[16px] font-bold text-[#666666] mt-1 flex items-center space-x-1.5">
               <span>{totalEarned}</span>
-              <span className="text-[16px]">&bull;</span>
+              <span>&bull;</span>
               <span>{date}</span>
             </div>
           </div>
 
-          {/* Bottom Section (List of Apps) */}
           <div className="flex flex-col gap-2">
             {items.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]">
-
-                {/* Left Side: App Info */}
+              <div 
+                key={index} 
+                className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]"
+              >
                 <div className="flex items-center space-x-3.5">
                   <div className="relative overflow-hidden rounded-[14px] bg-gray-100 dark:bg-gray-800 shadow-sm border border-gray-100/50 dark:border-gray-700/50">
                     <img
@@ -148,56 +180,13 @@
                   </div>
                 </div>
 
-                {/* Right Side: Value */}
                 <div className="text-[18px] font-bold text-[#333333] dark:text-[#333333]">
                   {item.earnedReward}
                 </div>
-
               </div>
             ))}
           </div>
         </div>
-      );
-    }
-
-    function BoostBanner() {
-      const { useState } = React;
-      const motion = window.Motion ? window.Motion.motion : null;
-      const [isHovered, setIsHovered] = useState(false);
-
-      if (!motion) {
-        return <div className="text-red-500 text-sm">Framer Motion script not loaded.</div>;
-      }
-
-      return (
-        <motion.div
-          layout
-          className={`flex items-center justify-center bg-[#FCF4EC] dark:bg-[#3E2E1D] border select-none cursor-pointer outline-none focus:ring-2 focus:ring-[#FCB78B] transition-all duration-200 ${isHovered ? 'border-[#FCB78B]' : 'border-[#EBE4D9]'} dark:border-[#EBE4D9]`}
-          style={{
-            borderRadius: '18px',
-            padding: '8px 5px 8px 10px',
-          }}
-          onHoverStart={() => setIsHovered(true)}
-          onHoverEnd={() => setIsHovered(false)}
-          transition={{ type: "spring", stiffness: 350, damping: 28 }}
-          aria-label="Boost banner"
-        >
-          <motion.div layout="position" className="flex-shrink-0 flex items-center justify-center z-10 w-[52px] h-[52px]">
-            <img src="./Assest/Watch.svg" alt="Boost watch" className="w-[39px] h-[39px] object-contain flex-shrink-0 transition-all duration-200" style={{ filter: isHovered ? 'saturate(1.8)' : 'saturate(1)' }} />
-          </motion.div>
-
-          <motion.div
-            layout="position"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="overflow-hidden text-left font-['Figtree',_sans-serif] flex ml-1"
-          >
-            <p className="text-[14px] font-semibold text-[#1F1F1F] dark:text-[#EAEAEA] leading-snug w-[184px] whitespace-normal pr-1">
-              5x Boost active! Rewards unlock up to 6 days sooner
-            </p>
-          </motion.div>
-        </motion.div>
       );
     }
 

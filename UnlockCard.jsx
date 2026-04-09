@@ -1,17 +1,3 @@
-import React from 'react';
-
-/**
- * UnlockCard Component
- * 
- * A modern mobile UI card component demonstrating an unlock or reward status.
- * Requires the Figtree font to match the design perfectly.
- * 
- * To install Figtree in your project, add the following to your HTML head:
- * <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
- * 
- * Or extend your tailwind theme to use Figtree as the default sans-serif font.
- */
-// Edit this data object to easily add/change items without touching the component above
 export const unlockCardData = {
   title: "Unlocks in 13 days",
   date: "Apr 20",
@@ -27,6 +13,12 @@ export const unlockCardData = {
       earnedDate: "Jan 22",
       appIconUrl: "./Assest/image 53.png",
       earnedReward: "$2.50"
+    },
+    {
+      appName: "Monopoly Go!",
+      earnedDate: "Jan 22",
+      appIconUrl: "./Assest/image 55.png",
+      earnedReward: "$5.00"
     }
   ]
 };
@@ -36,8 +28,6 @@ export default function UnlockCard({
   date = unlockCardData.date,
   items = unlockCardData.items
 }) {
-
-  // Dynamically calculate the total earned by parsing the reward strings
   const calculatedTotal = items.reduce((acc, item) => {
     const val = parseFloat((item.earnedReward || "").replace(/[^0-9.-]+/g, ""));
     return acc + (isNaN(val) ? 0 : val);
@@ -45,34 +35,33 @@ export default function UnlockCard({
   const totalEarned = `$${calculatedTotal.toFixed(2)}`;
 
   return (
-    <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5 font-['Figtree',_sans-serif]">
+    <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5">
 
-      {/* Top Section */}
       <div className="flex flex-col pb-5">
-        <h2 className="text-[18px] font-semibold text-[#1F1F1F] dark:text-[#1F1F1F] leading-snug tracking-tight">
+        <h2 className="text-[18px] font-bold text-[#333333] dark:text-[#333333] leading-snug tracking-tight">
           {typeof title === 'string' ? title.split(/(\d+ days)/i).map((part, i) =>
             /^\d+ days$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
           ) : title}
         </h2>
-        <div className="text-[16px] font-semibold text-[#666666] dark:text-[#666666] mt-1 flex items-center space-x-1.5">
+        <div className="text-[16px] font-bold text-[#666666] mt-1 flex items-center space-x-1.5">
           <span>{totalEarned}</span>
-          <span className="text-[12px] opacity-70">&bull;</span>
+          <span>&bull;</span>
           <span>{date}</span>
         </div>
       </div>
 
-      {/* Bottom Section (List of Apps) */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         {items.map((item, index) => (
-          <div key={index} className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-[#FAFAFA] rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]">
-
-            {/* Left Side: App Info */}
+          <div 
+            key={index} 
+            className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]"
+          >
             <div className="flex items-center space-x-3.5">
               <div className="relative overflow-hidden rounded-[14px] bg-gray-100 dark:bg-gray-800 shadow-sm border border-gray-100/50 dark:border-gray-700/50">
                 <img
                   src={item.appIconUrl}
                   alt={`${item.appName} icon`}
-                  className="w-[42px] h-[42px] object-cover flex-shrink-0"
+                  className="w-[44px] h-[44px] object-cover flex-shrink-0"
                 />
               </div>
               <div className="flex flex-col">
@@ -85,11 +74,9 @@ export default function UnlockCard({
               </div>
             </div>
 
-            {/* Right Side: Value */}
-            <div className="text-[15px] font-bold text-gray-900 dark:text-gray-100">
+            <div className="text-[18px] font-bold text-[#333333] dark:text-[#333333]">
               {item.earnedReward}
             </div>
-
           </div>
         ))}
       </div>
