@@ -124,8 +124,8 @@
 
     /* Card metadata */
     const cardMeta = {
-      title: "Tasks",
-      subtitle: "Complete task",
+      title: "Activities",
+      subtitle: "Click each item",
       footerText: "See all"
     };
 
@@ -143,32 +143,32 @@
     const rewardItems = [
       {
         id: 1,
-        primaryText: "Complete daily streak",
-        secondaryText: "Keep it alive!",
+        primaryText: "Personal Care",
+        secondaryText: "Maintain hygiene",
         reward: "80 pts",
         iconBg: "#FEE4E2",
         iconUrl: "./Assest/icon-flame.svg"
       },
       {
         id: 2,
-        primaryText: "Scan receipt",
-        secondaryText: "Get paid on your purchases",
+        primaryText: "Study",
+        secondaryText: "Read a book",
         reward: "100 pts",
         iconBg: "#FFE4D9",
         iconUrl: "./Assest/icon-receipt.svg"
       },
       {
         id: 3,
-        primaryText: "Watch an ad",
-        secondaryText: "Takes 1 minute",
+        primaryText: "Try a new dish",
+        secondaryText: "Something new",
         reward: "80 pts",
         iconBg: "#FFF3D9",
         iconUrl: "./Assest/icon-eyes.svg"
       },
       {
         id: 4,
-        primaryText: "Clash of Clans",
-        secondaryText: "Download & Play",
+        primaryText: "Relax",
+        secondaryText: "Play a game",
         reward: "150 pts",
         iconBg: "#FFF3D9",
         iconUrl: "./Assest/Clashofclans.svg"
@@ -247,7 +247,7 @@
             {items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]"
+                className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[1.02]"
               >
                 {/* App icon and name */}
                 <div className="flex items-center space-x-3.5">
@@ -494,13 +494,13 @@
           }
         }
         .animate-swipe-out {
-          animation: swipeRightToLeft 350ms ease-in forwards;
+          animation: swipeRightToLeft 350ms ease-in-out forwards;
         }
         .animate-slide-in {
-          animation: slideInFromLeft 350ms ease-out forwards;
+          animation: slideInFromLeft 350ms ease-in-out forwards;
         }
         .animate-slide-up {
-          animation: slideUp 350ms ease-out forwards;
+          animation: slideUp 350ms ease-in-out forwards;
         }
       `;
 
@@ -529,28 +529,28 @@
         <>
           <style>{style}</style>
           <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5 overflow-hidden">
-            <div className="flex flex-col">
-              {/* Progress section: current/target points with badge */}
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-[32px] font-bold text-[#FF5C01] leading-none">{localProgress.current}</span>
-                <span className="text-[18px] font-bold text-[#333333] dark:text-[#999999]">/{localProgress.target}</span>
-                <div className="">
-                  <span className="text-[20px] font-semibold text-[#333333]">pts</span>
-                </div>
-              </div>
-
-              {/* Progress bar showing current progress toward goal */}
-              <div className="h-1.5 bg-[#F0F0F0] dark:bg-gray-700 rounded-full overflow-hidden mb-5">
-                <div
-                  className="h-full bg-[#FF5C01] rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-
+            <div className="flex flex-col pt-3">
               {/* Title and subtitle */}
-              <div className="mb-5">
-                <h2 className="text-[22px] font-semibold text-[#333333] dark:text-[#E5E5E5] leading-tight">{title}</h2>
+              <div className="mb-5 text-center">
+                <h2 className="text-[30px] font-semibold text-[#333333] dark:text-[#E5E5E5] leading-tight">{title}</h2>
                 <p className="text-[16px] font-semibold text-[#666666] dark:text-[#666666] mt-0">{subtitle}</p>
+              </div>
+
+              {/* Progress container with bar and pts count */}
+              <div className="mb-5 flex flex-col items-center">
+                <div className="h-2 bg-[#F0F0F0] dark:bg-gray-700 rounded-full overflow-hidden mb-2 w-[160px]">
+                  <div
+                    className="h-full bg-[#FF5C01] rounded-full transition-all duration-500 ease-in-out"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <div className="w-[160px] flex justify-end">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-[14px] font-bold text-[#FF5C01] leading-none">{localProgress.current}</span>
+                    <span className="text-[14px] font-bold text-[#333333] dark:text-[#999999]">/{localProgress.target}</span>
+                    <span className="text-[14px] font-semibold text-[#333333]">pts</span>
+                  </div>
+                </div>
               </div>
 
               {/* List of reward tasks - limited to maxVisibleItems unless expanded */}
@@ -650,17 +650,17 @@
           <button
             onClick={() => onTabChange('daily')}
             onTouchEnd={(e) => { e.preventDefault(); onTabChange('daily'); }}
-            className={`flex-[1_1_100%] min-w-0 px-4 sm:px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap ${activeTab === 'daily'
+            className={`flex-[1_1_100%] min-w-0 px-4 sm:px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 ease-in-out cursor-pointer active:scale-95 whitespace-nowrap ${activeTab === 'daily'
               ? 'bg-white dark:bg-[#1E1E1E] text-[#333333] dark:text-[#E5E5E5] shadow-sm'
               : 'text-[#999999] dark:text-[#666666]'
               }`}
           >
-            Daily Goals
+            Activities
           </button>
           <button
             onClick={() => onTabChange('reward')}
             onTouchEnd={(e) => { e.preventDefault(); onTabChange('reward'); }}
-            className={`flex-[1_1_100%] min-w-0 px-4 sm:px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap ${activeTab === 'reward'
+            className={`flex-[1_1_100%] min-w-0 px-4 sm:px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 ease-in-out cursor-pointer active:scale-95 whitespace-nowrap ${activeTab === 'reward'
               ? 'bg-white dark:bg-[#1E1E1E] text-[#333333] dark:text-[#E5E5E5] shadow-sm'
               : 'text-[#999999] dark:text-[#666666]'
               }`}
@@ -679,31 +679,40 @@
     function LandingPage() {
       /* Track active tab: 'daily' shows CashQueueBoostCard, 'reward' shows UnlockCard + BoostBanner */
       const [activeTab, setActiveTab] = useState('daily');
+      const [isTransitioning, setIsTransitioning] = useState(false);
+
+      const handleTabChange = (tab) => {
+        if (tab === activeTab) return;
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setActiveTab(tab);
+          setTimeout(() => setIsTransitioning(false), 50);
+        }, 150);
+      };
 
       return (
         <div className="min-h-screen flex flex-col items-center relative">
-          {/* Conditional rendering based on active tab */}
-          {activeTab === 'daily' ? (
-            /* Daily Goals view: Shows CashQueueBoostCard with reward progress */
-            /* Card expands downward from top position */
-            <div className="w-full max-w-[358px] pt-24 sm:pt-[30vh]">
+          {/* Conditional rendering based on active tab with fade transition */}
+          <div className={`w-full max-w-[358px] pt-24 sm:pt-[30vh] transition-opacity duration-200 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+            {activeTab === 'daily' ? (
+              /* Daily Goals view: Shows CashQueueBoostCard with reward progress */
               <CashQueueBoostCard />
-            </div>
-          ) : (
-            /* Reward Queue view: Shows BoostBanner and UnlockCard */
-            <>
-              <div className="w-full max-w-[260px] pt-24 sm:pt-[30vh]">
-                <BoostBanner />
+            ) : (
+              /* Reward Queue view: Shows BoostBanner and UnlockCard */
+              <div className="flex flex-col items-center">
+                <div className="w-full max-w-[260px]">
+                  <BoostBanner />
+                </div>
+                <div className="w-full mt-10">
+                  <UnlockCard />
+                </div>
               </div>
-              <div className="w-full max-w-[358px] mt-10">
-                <UnlockCard />
-              </div>
-            </>
-          )}
+            )}
+          </div>
 
           {/* Tab toggle for switching between Daily Goals and Reward Queue - positioned at bottom */}
           <div className="fixed bottom-8 left-1/2 -translate-x-1/2">
-            <TabToggle activeTab={activeTab} onTabChange={setActiveTab} />
+            <TabToggle activeTab={activeTab} onTabChange={handleTabChange} />
           </div>
         </div>
       );
