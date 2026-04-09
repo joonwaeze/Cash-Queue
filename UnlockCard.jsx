@@ -3,9 +3,11 @@
 /* Purpose: Data structure for the UnlockCard showing earned rewards */
 /* Contains: title, date, and array of app items with earned rewards */
 /* ===================== */
+const { useState, useEffect } = React;
+
 export const unlockCardData = {
   title: "Unlocks in 13 days",
-  date: "Apr 20",
+  date: "Apr 10",
   items: [
     {
       appName: "Coin Chef",
@@ -31,7 +33,7 @@ export const unlockCardData = {
 /* ===================== */
 /* UNLOCK CARD           */
 /* Purpose: Displays a list of apps with their earned rewards and dates */
-/* Features: Calculates total earned, displays app icons, hover animations */
+/* Features: Calculates total earned, displays app icons, hover animations, countdown timer */
 /* Props: title, date, items (all with fallback to unlockCardData) */
 /* ===================== */
 export default function UnlockCard({
@@ -39,6 +41,45 @@ export default function UnlockCard({
   date = unlockCardData.date,
   items = unlockCardData.items
 }) {
+  const monthMap = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11 };
+  const dateParts = date.split(' ');
+  const month = monthMap[dateParts[0]] || 0;
+  const day = parseInt(dateParts[1], 10) || 1;
+  const currentYear = new Date().getFullYear();
+  const targetDate = new Date(currentYear, month, day, 23, 59, 59);
+
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const now = new Date();
+    const diff = targetDate - now;
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((diff % (1000 * 60)) / 1000)
+    };
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const diff = targetDate - now;
+      if (diff <= 0) {
+        clearInterval(timer);
+        return;
+      }
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000)
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const countdownText = `Unlocks in   ${timeLeft.hours} hr ${timeLeft.minutes} m ${timeLeft.seconds}s`;
+
   /* Calculate total earned amount from all reward items */
   const calculatedTotal = items.reduce((acc, item) => {
     const val = parseFloat((item.earnedReward || "").replace(/[^0-9.-]+/g, ""));
@@ -52,11 +93,11 @@ export default function UnlockCard({
 
       {/* Card header: title and summary stats */}
       <div className="flex flex-col pb-5">
-        {/* Title with highlighted "X days" text in orange */}
+        {/* Title with countdown timer */}
         <h2 className="text-[18px] font-bold text-[#333333] dark:text-[#333333] leading-snug tracking-tight">
-          {typeof title === 'string' ? title.split(/(\d+ days)/i).map((part, i) =>
-            /^\d+ days$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
-          ) : title}
+          {countdownText.split(/(\d+ hr \d+ m \d+s)/i).map((part, i) =>
+            /^\d+ hr \d+ m \d+s$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
+          )}
         </h2>
         {/* Total earned amount and date */}
         <div className="text-[16px] font-bold text-[#666666] mt-1 flex items-center space-x-1.5">
@@ -71,7 +112,7 @@ export default function UnlockCard({
         {items.map((item, index) => (
           <div 
             key={index} 
-            className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]"
+            className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[1.02]"
           >
             {/* App icon and name */}
             <div className="flex items-center space-x-3.5">
@@ -88,7 +129,7 @@ export default function UnlockCard({
                 <span className="text-[16px] font-semibold text-[#333333] dark:text-gray-100 leading-tight">
                   {item.appName}
                 </span>
-                <span className="text-[16px] font-semibold text-[#666666] dark:text-[#666666] mt-0.5">
+                <span className="text-[14px] font-semibold text-[#666666] dark:text-[#666666] mt-0.5">
                   Earned {item.earnedDate}
                 </span>
               </div>

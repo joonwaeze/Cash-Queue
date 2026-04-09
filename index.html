@@ -5,7 +5,7 @@
   <!-- Page metadata -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unlock Card Landing Page</title>
+  <title>Component page</title>
 
   <!-- Google Fonts preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,7 +72,7 @@
     /* ===================== */
     /* REACT HOOKS          */
     /* ===================== */
-    const { useState } = React;
+    const { useState, useEffect } = React;
 
     /* ===================== */
     /* BOOST BANNER         */
@@ -106,7 +106,7 @@
           {/* Banner text content */}
           <div className="overflow-hidden text-left font-['Figtree',_sans-serif] flex ml-1">
             <p className="text-[14px] font-semibold text-[#1F1F1F] dark:text-[#EAEAEA] leading-snug w-[184px] whitespace-normal pr-1">
-              5x Boost active! Rewards unlock up to 6 days sooner
+              Boost active! Rewards unlock up to 6 days sooner
             </p>
           </div>
         </div>
@@ -144,7 +144,7 @@
       {
         id: 1,
         primaryText: "Personal Care",
-        secondaryText: "Maintain hygiene",
+        secondaryText: "Touch grass",
         reward: "80 pts",
         iconBg: "#FEE4E2",
         iconUrl: "./Assest/icon-flame.svg"
@@ -183,7 +183,7 @@
     /* ===================== */
     const unlockCardData = {
       title: "Unlocks in 13 days",
-      date: "Apr 20",
+      date: "Apr 10",
       items: [
         {
           appName: "Coin Chef",
@@ -209,13 +209,51 @@
     /* ===================== */
     /* UNLOCK CARD           */
     /* Purpose: Displays a list of apps with their earned rewards and dates */
-    /* Features: Calculates total earned, displays app icons, hover animations */
+    /* Features: Calculates total earned, displays app icons, hover animations, countdown timer */
     /* ===================== */
     function UnlockCard({
       title = unlockCardData.title,
       date = unlockCardData.date,
       items = unlockCardData.items
     }) {
+      const monthMap = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11 };
+      const dateParts = date.split(' ');
+      const month = monthMap[dateParts[0]] || 0;
+      const day = parseInt(dateParts[1], 10) || 1;
+      const currentYear = new Date().getFullYear();
+      const targetDate = new Date(currentYear, month, day, 23, 59, 59);
+      const [timeLeft, setTimeLeft] = useState(() => {
+        const now = new Date();
+        const diff = targetDate - now;
+        if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        return {
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((diff % (1000 * 60)) / 1000)
+        };
+      });
+
+      useEffect(() => {
+        const timer = setInterval(() => {
+          const now = new Date();
+          const diff = targetDate - now;
+          if (diff <= 0) {
+            clearInterval(timer);
+            return;
+          }
+          setTimeLeft({
+            days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+            hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+            minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+            seconds: Math.floor((diff % (1000 * 60)) / 1000)
+          });
+        }, 1000);
+        return () => clearInterval(timer);
+      }, []);
+
+      const countdownText = `Unlocks in   ${timeLeft.hours} hr ${timeLeft.minutes} m ${timeLeft.seconds}s`;
+
       // Calculate total earned amount from all reward items
       const calculatedTotal = items.reduce((acc, item) => {
         const val = parseFloat((item.earnedReward || "").replace(/[^0-9.-]+/g, ""));
@@ -228,11 +266,11 @@
 
           {/* Card header: title and summary stats */}
           <div className="flex flex-col pb-5">
-            {/* Title with highlighted "X days" text in orange */}
+            {/* Title with countdown timer */}
             <h2 className="text-[18px] font-bold text-[#333333] dark:text-[#333333] leading-snug tracking-tight">
-              {typeof title === 'string' ? title.split(/(\d+ days)/i).map((part, i) =>
-                /^\d+ days$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
-              ) : title}
+              {countdownText.split(/(\d+ hr \d+ m \d+s)/i).map((part, i) =>
+                /^\d+ hr \d+ m \d+s$/i.test(part) ? <span key={i} className="text-[#FF5C01]">{part}</span> : part
+              )}
             </h2>
             {/* Total earned amount and date */}
             <div className="text-[16px] font-bold text-[#666666] mt-1 flex items-center space-x-1.5">
@@ -531,7 +569,7 @@
           <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5 overflow-hidden">
             <div className="flex flex-col pt-3">
               {/* Title and subtitle */}
-              <div className="mb-5 text-center">
+              <div className="mb-3 text-center">
                 <h2 className="text-[26px] font-bold text-[#333333] dark:text-[#E5E5E5] leading-tight">{title}</h2>
                 <p className="text-[16px] font-semibold text-[#666666] dark:text-[#666666] mt-0">{subtitle}</p>
               </div>
@@ -621,7 +659,7 @@
               {/* Only show button if there are more items than maxVisibleItems */}
               {hasMoreItems && (
                 <button
-                  className="mt-4 mx-auto flex items-center gap-1.5 px-4 py-2 text-[14px] font-semibold text-[#999999] dark:text-[#666666] hover:text-[#FF5C01] dark:hover:text-[#FF5C01] transition-colors duration-200 rounded-lg hover:bg-[#FFF3EC] dark:hover:bg-[#FFF3EC]/10"
+                  className="mt-4 mx-auto flex items-center gap-1.5 px-4 py-2 text-[14px] font-semibold text-[#999999] dark:text-[#666666] hover:text-[#FF5C01] dark:hover:text-[#FF5C01] transition-colors duration-200 rounded-lg"
                   onMouseEnter={() => setIsFooterHovered(true)}
                   onMouseLeave={() => setIsFooterHovered(false)}
                   onClick={() => setIsExpanded(!isExpanded)}
@@ -665,7 +703,7 @@
               : 'text-[#999999] dark:text-[#666666]'
               }`}
           >
-            Reward Queue
+            Rewards
           </button>
         </div>
       );

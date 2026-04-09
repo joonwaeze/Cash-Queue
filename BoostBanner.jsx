@@ -35,7 +35,7 @@ export default function BoostBanner() {
       {/* Banner text content */}
       <div className="overflow-hidden text-left font-['Figtree',_sans-serif] flex ml-1">
         <p className="text-[14px] font-semibold text-[#1F1F1F] dark:text-[#EAEAEA] leading-snug w-[184px] whitespace-normal pr-1">
-          5x Boost active! Rewards unlock up to 6 days sooner
+          Boost active! Rewards unlock up to 6 days sooner
         </p>
       </div>
     </div>
