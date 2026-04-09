@@ -12,7 +12,7 @@ export const cashQueueBoostData = {
   progressData: { current: 80, target: 200 },
   cardMeta: {
     title: "Cash Queue Boost",
-    subtitle: "Next reward",
+    subtitle: "Click to complete task",
     footerText: "See all"
   },
   rewardItems: [

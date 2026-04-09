@@ -13,7 +13,7 @@ export const progressData = {
 /* Card metadata */
 export const cardMeta = {
   title: "Cash Queue Boost",
-  subtitle: "Next reward",
+  subtitle: "Click to complete task",
   footerText: "See all"
 };
 
