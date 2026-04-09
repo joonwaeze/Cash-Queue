@@ -70,97 +70,17 @@ export default function CashQueueBoostCard({
   const [isFooterHovered, setIsFooterHovered] = useState(false);
   /* Track expanded state for "See more/Less" toggle */
   const [isExpanded, setIsExpanded] = useState(false);
-  /* Track drag state for reordering items */
-  const [localItems, setLocalItems] = useState([...items]);
-  const [draggedIndex, setDraggedIndex] = useState(null);
-  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   /* Calculate progress percentage for the progress bar */
   const progressPercent = (progress.current / progress.target) * 100;
 
   /* Determine which items to display based on expanded state */
-  const displayedItems = isExpanded ? localItems : localItems.slice(0, maxVisibleItems);
-  const hasMoreItems = localItems.length > maxVisibleItems;
-
-  /* Handle drag start */
-  const handleDragStart = (e, index) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', index);
-  };
-
-  /* Handle drag over */
-  const handleDragOver = (e, index) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverIndex(index);
-  };
-
-  /* Handle drag end */
-  const handleDragEnd = () => {
-    if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
-      const newItems = [...localItems];
-      const [draggedItem] = newItems.splice(draggedIndex, 1);
-      newItems.splice(dragOverIndex, 0, draggedItem);
-      setLocalItems(newItems);
-    }
-    setDraggedIndex(null);
-    setDragOverIndex(null);
-  };
-
-  /* Handle touch events for mobile drag */
-  const handleTouchStart = (e, index) => {
-    setDraggedIndex(index);
-  };
-
-  const handleTouchMove = (e, index) => {
-    if (draggedIndex === null) return;
-    
-    const touch = e.touches[0];
-    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-    const itemElement = elementBelow?.closest('[data-drag-item]');
-    
-    if (itemElement) {
-      const newIndex = parseInt(itemElement.dataset.dragIndex, 10);
-      if (!isNaN(newIndex) && newIndex !== dragOverIndex) {
-        setDragOverIndex(newIndex);
-      }
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
-      const newItems = [...localItems];
-      const [draggedItem] = newItems.splice(draggedIndex, 1);
-      newItems.splice(dragOverIndex, 0, draggedItem);
-      setLocalItems(newItems);
-    }
-    setDraggedIndex(null);
-    setDragOverIndex(null);
-  };
-
-  /* CSS for fade-in animation */
-  const style = `
-    @keyframes fadeSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .animate-fade-in {
-      animation: fadeSlideIn 300ms ease-in-out forwards;
-    }
-  `;
+  const displayedItems = isExpanded ? items : items.slice(0, maxVisibleItems);
+  const hasMoreItems = items.length > maxVisibleItems;
 
   return (
-    <>
-      <style>{style}</style>
-      {/* Main card container with white background and shadow */}
-      <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5">
+    /* Main card container with white background and shadow */
+    <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none dark:border dark:border-gray-800 p-5">
       <div className="flex flex-col">
 
         {/* Progress section: current/target points with badge */}
@@ -182,64 +102,46 @@ export default function CashQueueBoostCard({
 
         {/* Title and subtitle */}
         <div className="mb-5">
-          <h2 className="text-[22px] font-bold text-[#333333] dark:text-[#E5E5E5] leading-tight">{title}</h2>
+          <h2 className="text-[20px] font-bold text-[#333333] dark:text-[#E5E5E5] leading-tight">{title}</h2>
           <p className="text-[14px] font-medium text-[#999999] dark:text-[#666666] mt-0.5">{subtitle}</p>
         </div>
 
         {/* List of reward tasks with icons and point amounts */}
         <div className="flex flex-col gap-2">
-          {displayedItems.map((item, index) => {
-            const originalIndex = localItems.indexOf(item);
-            const isDragging = draggedIndex === originalIndex;
-            const isDragOver = dragOverIndex === originalIndex && draggedIndex !== originalIndex;
-            const isNewlyVisible = isExpanded && index >= maxVisibleItems;
-
-            return (
-              <div
-                key={item.id}
-                data-drag-item
-                data-drag-index={originalIndex}
-                draggable
-                onDragStart={(e) => handleDragStart(e, originalIndex)}
-                onDragOver={(e) => handleDragOver(e, originalIndex)}
-                onDragEnd={handleDragEnd}
-                onTouchStart={(e) => handleTouchStart(e, originalIndex)}
-                onTouchMove={(e) => handleTouchMove(e, originalIndex)}
-                onTouchEnd={handleTouchEnd}
-                className={`flex items-center justify-between p-2.5 -mx-2.5 rounded-[14px] transition-all duration-300 ease-in-out cursor-grab active:cursor-grabbing ${
-                  isDragging ? 'opacity-50 scale-95' : 'hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 hover:scale-[1.02]'
-                } ${isNewlyVisible ? 'opacity-0 translate-y-2 animate-fade-in' : 'opacity-100 translate-y-0'}`}
-              >
-                  {/* Icon and task description */}
-                <div className="flex items-center space-x-3.5 flex-1 min-w-0">
-                  <div
-                    className="w-[44px] h-[44px] rounded-[14px] flex items-center justify-center flex-shrink-0 overflow-hidden"
-                    style={{ backgroundColor: item.iconBg }}
-                  >
-                    <img
-                      src={item.iconUrl}
-                      alt={item.primaryText}
-                      className="w-[42px] h-[42px] object-contain"
-                    />
-                  </div>
-                  {/* Task primary and secondary text */}
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[16px] font-semibold text-[#333333] dark:text-gray-100 leading-tight truncate">
-                      {item.primaryText}
-                    </span>
-                    <span className="text-[12px] font-semibold text-[#666666] dark:text-[#666666] mt-0.5 truncate">
-                      {item.secondaryText}
-                    </span>
-                  </div>
+          {displayedItems.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center justify-between p-2.5 -mx-2.5 hover:bg-[#FAFAFA] dark:hover:bg-gray-700/30 rounded-[14px] transition-all duration-300 ease cursor-pointer hover:scale-[1.02]"
+            >
+              {/* Icon and task description */}
+              <div className="flex items-center space-x-3.5">
+                <div
+                  className="w-[44px] h-[44px] rounded-[14px] flex items-center justify-center flex-shrink-0 overflow-hidden"
+                  style={{ backgroundColor: item.iconBg }}
+                >
+                  <img
+                    src={item.iconUrl}
+                    alt={item.primaryText}
+                    className="w-[42px] h-[42px] object-contain"
+                  />
                 </div>
-
-                {/* Reward points amount */}
-                <div className="text-[18px] font-bold text-[#FF5C01] pl-2">
-                  {item.reward}
+                {/* Task primary and secondary text */}
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[16px] font-semibold text-[#333333] dark:text-gray-100 leading-tight truncate">
+                    {item.primaryText}
+                  </span>
+                  <span className="text-[12px] font-semibold text-[#666666] dark:text-[#666666] mt-0.5 truncate">
+                    {item.secondaryText}
+                  </span>
                 </div>
               </div>
-            );
-          })}
+
+              {/* Reward points amount */}
+              <div className="text-[18px] font-bold text-[#FF5C01]">
+                {item.reward}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Footer "See more/Less" button with chevron animation */}
@@ -253,13 +155,12 @@ export default function CashQueueBoostCard({
             aria-label={isExpanded ? "See less" : footerText}
           >
             <span>{isExpanded ? "See less" : footerText}</span>
-              <span className={`transition-transform duration-200 ${isFooterHovered ? 'translate-y-0.5' : ''} ${isExpanded ? 'rotate-180' : ''}`}>
-                <ChevronDownIcon />
-              </span>
+            <span className={`transition-transform duration-200 ${isFooterHovered ? 'translate-y-0.5' : ''}`}>
+              <ChevronDownIcon />
+            </span>
           </button>
         )}
       </div>
     </div>
-    </>
   );
 }

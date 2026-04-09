@@ -500,25 +500,27 @@
     /* ===================== */
     /* TAB TOGGLE COMPONENT  */
     /* Purpose: Toggle between Daily Goals and Reward Queue views */
-    /* Features: Active state styling, smooth transitions */
+    /* Features: Active state styling, smooth transitions, mobile-optimized */
     /* ===================== */
     function TabToggle({ activeTab, onTabChange }) {
       return (
-        <div className="flex items-center bg-[#F5F5F5] dark:bg-[#2A2A2A] rounded-[14px] p-1 gap-1">
+        <div className="flex items-center bg-[#F5F5F5] dark:bg-[#2A2A2A] rounded-[14px] p-1 gap-1 select-none touch-manipulation -webkit-tap-highlight-color-transparent w-full max-w-[358px]">
           <button
             onClick={() => onTabChange('daily')}
-            className={`px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 ${activeTab === 'daily'
+            onTouchEnd={(e) => { e.preventDefault(); onTabChange('daily'); }}
+            className={`flex-[1_1_100%] min-w-0 px-4 sm:px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap ${activeTab === 'daily'
               ? 'bg-white dark:bg-[#1E1E1E] text-[#333333] dark:text-[#E5E5E5] shadow-sm'
-              : 'text-[#999999] dark:text-[#666666] hover:text-[#666666] dark:hover:text-[#999999]'
+              : 'text-[#999999] dark:text-[#666666]'
               }`}
           >
             Daily Goals
           </button>
           <button
             onClick={() => onTabChange('reward')}
-            className={`px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 ${activeTab === 'reward'
+            onTouchEnd={(e) => { e.preventDefault(); onTabChange('reward'); }}
+            className={`flex-[1_1_100%] min-w-0 px-4 sm:px-5 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap ${activeTab === 'reward'
               ? 'bg-white dark:bg-[#1E1E1E] text-[#333333] dark:text-[#E5E5E5] shadow-sm'
-              : 'text-[#999999] dark:text-[#666666] hover:text-[#666666] dark:hover:text-[#999999]'
+              : 'text-[#999999] dark:text-[#666666]'
               }`}
           >
             Reward Queue
@@ -542,13 +544,13 @@
           {activeTab === 'daily' ? (
             /* Daily Goals view: Shows CashQueueBoostCard with reward progress */
             /* Card expands downward from top position */
-            <div className="w-full max-w-[358px] pt-[30vh]">
+            <div className="w-full max-w-[358px] pt-16 sm:pt-[30vh]">
               <CashQueueBoostCard />
             </div>
           ) : (
             /* Reward Queue view: Shows BoostBanner and UnlockCard */
             <>
-              <div className="w-full max-w-[260px] pt-[30vh]">
+              <div className="w-full max-w-[260px] pt-16 sm:pt-[30vh]">
                 <BoostBanner />
               </div>
               <div className="w-full max-w-[358px] mt-6">
