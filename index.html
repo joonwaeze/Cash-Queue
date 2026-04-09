@@ -301,7 +301,7 @@
                     <span className="text-[16px] font-semibold text-[#333333] dark:text-gray-100 leading-tight">
                       {item.appName}
                     </span>
-                    <span className="text-[16px] font-semibold text-[#666666] dark:text-[#666666] mt-0.5">
+                    <span className="text-[14px] font-semibold text-[#666666] dark:text-[#666666] mt-0.5">
                       Earned {item.earnedDate}
                     </span>
                   </div>
@@ -731,7 +731,7 @@
       return (
         <div className="min-h-screen flex flex-col items-center relative">
           {/* Conditional rendering based on active tab with fade transition */}
-          <div className={`w-full max-w-[358px] pt-24 sm:pt-[30vh] transition-opacity duration-200 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+          <div className={`w-full max-w-[358px] pt-16 sm:pt-[30vh] transition-opacity duration-200 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
             {activeTab === 'daily' ? (
               /* Daily Goals view: Shows CashQueueBoostCard with reward progress */
               <CashQueueBoostCard />
