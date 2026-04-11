@@ -121,6 +121,9 @@ export default function CashQueueBoostCard({
   /* Track sorted item order */
   const [sortedItemIds, setSortedItemIds] = useState(() => items.map(item => item.id));
 
+  /* Track card phase: 'active' | 'exiting' | 'success' */
+  const [cardPhase, setCardPhase] = useState('active');
+
   // Sort items by sortedItemIds order
   const getSortedItems = () => {
     return [...items].sort((a, b) => {
@@ -146,10 +149,41 @@ export default function CashQueueBoostCard({
 
     setCompletedItems(prev => new Set([...prev, item.id]));
     
-    setLocalProgress(prev => ({
-      ...prev,
-      current: Math.min(prev.current + rewardValue, prev.target)
-    }));
+    setLocalProgress(prev => {
+      const newCurrent = Math.min(prev.current + rewardValue, prev.target);
+      
+      // Check if target reached
+      if (newCurrent >= prev.target && prev.current < prev.target) {
+        // Wait for progress bar animation and swipe to finish
+        setTimeout(() => {
+          setCardPhase('exiting');
+          
+          // Wait for exit animation to complete before showing success
+          setTimeout(() => {
+            setCardPhase('success');
+            
+            // Trigger full-viewport confetti falling from top
+            if (window.confetti) {
+              window.confetti({
+                particleCount: 120,
+                angle: 270,        // Straight down
+                spread: 120,       // Wide spread
+                origin: { x: 0.5, y: -0.1 }, // Top of screen
+                startVelocity: 40,
+                gravity: 0.8,      // Light, floaty feel
+                ticks: 350,
+                colors: ['#FF5C01', '#FFB78B', '#FEE4E2', '#FFF3D9', '#4CAF50', '#2196F3']
+              });
+            }
+          }, 400); // Wait for exit transition (400ms)
+        }, 1000); 
+      }
+      
+      return {
+        ...prev,
+        current: newCurrent
+      };
+    });
 
     setTimeout(() => {
       setSwipingItems(prev => new Set([...prev, item.id]));
@@ -182,8 +216,9 @@ export default function CashQueueBoostCard({
   return (
     <>
       <style>{style}</style>
-      <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5 overflow-hidden">
-        <div className="flex flex-col pt-3">
+      <div className="w-full max-w-[358px] bg-white dark:bg-[#1E1E1E] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 p-5 overflow-hidden relative min-h-[300px]">
+        {/* ACTIVE STATE WRAPPER. Always relative to keep card height intact. Scales down and fades out on exit. */}
+        <div className={`flex flex-col pt-3 transition-all duration-400 ease-in-out transform origin-center ${cardPhase !== 'active' ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
         {/* Title and subtitle */}
         <div className="mb-2 text-center">
           <h2 className="text-[22px] font-semibold text-[#333333] dark:text-[#E5E5E5] leading-tight">{title}</h2>
@@ -272,8 +307,18 @@ export default function CashQueueBoostCard({
             </span>
           </button>
         )}
+        </div>
+
+        {/* SUCCESS STATE WRAPPER. Positioned absolute to perfectly overlap original card bounds. */}
+        <div className={`absolute inset-0 p-5 flex flex-col items-center justify-center transition-all duration-500 ease-in-out transform origin-center ${cardPhase === 'success' ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}`}>
+          <h2 className="text-[28px] font-bold text-[#333333] dark:text-[#EAEAEA] leading-tight text-center mb-2">
+            Congratulations!
+          </h2>
+          <p className="text-[16px] font-semibold text-[#666666] dark:text-[#999999] text-center max-w-[240px]">
+            You've successfully reached your target for today.
+          </p>
+        </div>
       </div>
-    </div>
     </>
   );
 }
